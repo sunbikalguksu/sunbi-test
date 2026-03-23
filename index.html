@@ -555,8 +555,8 @@ async function runAI(scores,avg,verdict){
 
 2~3문장으로 간결하게 핵심 성향과 본사 권고 의견만 작성하세요. 마크다운 없이 평문으로.`;
   try{
-    const keyRes=await fetch("https://sunbi-test-default-rtdb.firebaseio.com/config/gemini_key.json");
-    const apiKey=await keyRes.json();
+    const keyRes=await fetch("https://sunbi-test-default-rtdb.firebaseio.com/config/gk.json");
+    const apiKey=atob(await keyRes.json());
     const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
