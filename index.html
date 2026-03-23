@@ -457,7 +457,7 @@ function nav(dir){
     const ans=answers[curQ];
     if(q.type==="likert"&&ans===undefined)return;
     if(q.type==="multi"&&(!ans||ans.length===0)){alert("항목을 하나 이상 선택해 주세요.");return;}
-    if(curQ===allQ.length-1){showResult();return;}
+    if(curQ===allQ.length-1){showResult().catch(e=>console.error(e));return;}
     curQ++;
   } else {if(curQ>0)curQ--;}
   render();
@@ -528,14 +528,16 @@ async function showResult(){
   document.getElementById("fbArea").innerHTML=fbHtml;
 
   // DB 저장
-  const answerData=allQ.map((q,i)=>{
-    const a=answers[i];
-    if(q.type==="likert"){return{q:q.text,a:LK3.find(l=>l.val===a)?.label||"미응답"};}
-    else{return{q:q.text,a:(a||[]).map(idx=>q.options[idx]).join(", ")||"미선택"};}
-  });
-  const records=await loadDB();
-  records.push({name:applicant.name,phone:applicant.phone,branch:applicant.branch,date:dateStr,avg,scores,verdict:verdictLabel,answers:answerData});
-  await saveDB(records);
+  try{
+    const answerData=allQ.map((q,i)=>{
+      const a=answers[i];
+      if(q.type==="likert"){return{q:q.text,a:LK3.find(l=>l.val===a)?.label||"미응답"};}
+      else{return{q:q.text,a:(a||[]).map(idx=>q.options[idx]).join(", ")||"미선택"};}
+    });
+    const records=await loadDB();
+    records.push({name:applicant.name,phone:applicant.phone,branch:applicant.branch,date:dateStr,avg,scores,verdict:verdictLabel,answers:answerData});
+    await saveDB(records);
+  }catch(dbErr){console.error("DB 저장 오류:",dbErr);}
 
   // AI
   await runAI(scores,avg,verdictLabel);
@@ -568,7 +570,8 @@ async function runAI(scores,avg,verdict){
     const p=document.getElementById("printAIText");
     if(p)p.textContent=text;
   } catch(e){
-    document.getElementById("aiContent").innerHTML=`<div class="ai-text">AI 분석 오류: ${e.message}</div>`;
+    console.error("AI 분석 오류:",e);
+    document.getElementById("aiContent").innerHTML=`<div class="ai-text" style="color:#8b2020;">AI 분석 오류: ${e.message}<br><span style="font-size:11px;color:var(--ink3);">잠시 후 다시 시도하거나 관리자에게 문의하세요.</span></div>`;
   }
 }
 
