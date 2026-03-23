@@ -298,6 +298,15 @@
           <button class="btn btn-primary" onclick="checkPw()">확인</button>
         </div>
       </div>
+      <!-- API 키 설정 -->
+      <div id="apiKeyArea" class="hidden" style="margin-bottom:1.2rem;padding:1rem;background:var(--gold-light);border:1px solid var(--gold);border-radius:2px;">
+        <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px;">AI 성향 분석 API 키</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." style="flex:1;border:1px solid var(--paper3);border-radius:2px;padding:8px 10px;font-size:13px;font-family:'Noto Sans KR',sans-serif;">
+          <button class="btn btn-primary" style="white-space:nowrap;font-size:12px;padding:8px 14px;" onclick="saveApiKey()">저장</button>
+        </div>
+        <div id="apiKeyStatus" style="font-size:11px;color:var(--ink3);margin-top:6px;"></div>
+      </div>
       <!-- DB 내용 -->
       <div id="dbArea" class="hidden"></div>
     </div>
@@ -533,10 +542,12 @@ async function runAI(scores,avg,verdict){
 
 2~3문장으로 간결하게 핵심 성향과 본사 권고 의견만 작성하세요. 마크다운 없이 평문으로.`;
   try{
+    const apiKey=localStorage.getItem("ai_api_key")||"";
+    if(!apiKey){document.getElementById("aiContent").innerHTML=`<div class="ai-text">AI 분석 사용을 위해 관리자 패널에서 API 키를 등록해 주세요.</div>`;return;}
     const resp=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})
+      headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:300,messages:[{role:"user",content:prompt}]})
     });
     const data=await resp.json();
     const text=data.content?.find(b=>b.type==="text")?.text||"분석 결과를 불러오지 못했습니다.";
@@ -597,8 +608,17 @@ function doPrint(){
 }
 
 // ── ADMIN ──
+function saveApiKey(){
+  const key=document.getElementById("apiKeyInput").value.trim();
+  if(!key){document.getElementById("apiKeyStatus").textContent="키를 입력해 주세요.";return;}
+  localStorage.setItem("ai_api_key",key);
+  document.getElementById("apiKeyInput").value="";
+  document.getElementById("apiKeyStatus").textContent="✓ API 키가 저장되었습니다.";
+}
+
 function openAdmin(){
   document.getElementById("pwArea").classList.remove("hidden");
+  document.getElementById("apiKeyArea").classList.add("hidden");
   document.getElementById("dbArea").classList.add("hidden");
   document.getElementById("pwInput").value="";
   document.getElementById("pwError").textContent="";
@@ -612,7 +632,10 @@ async function checkPw(){
   const pw=document.getElementById("pwInput").value;
   if(pw===ADMIN_PW){
     document.getElementById("pwArea").classList.add("hidden");
+    document.getElementById("apiKeyArea").classList.remove("hidden");
     document.getElementById("dbArea").classList.remove("hidden");
+    const storedKey=localStorage.getItem("ai_api_key")||"";
+    document.getElementById("apiKeyStatus").textContent=storedKey?"✓ API 키가 등록되어 있습니다.":"API 키가 등록되지 않았습니다.";
     await renderAdminDB();
   } else {
     document.getElementById("pwError").textContent="비밀번호가 올바르지 않습니다.";
