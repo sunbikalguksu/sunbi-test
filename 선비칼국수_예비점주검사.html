@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>선비칼국수 — 예비점주 적성·인성 검사</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1612;
+    --ink2: #3d3530;
+    --ink3: #6b5f58;
+    --paper: #faf8f4;
+    --paper2: #f2ede6;
+    --paper3: #e8e0d6;
+    --gold: #8b6914;
+    --gold2: #b8902a;
+    --gold-light: #f5edd8;
+    --red: #8b2020;
+    --green: #1a5c3a;
+    --accent: #5c3d1e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ───── SCREEN LAYOUT ───── */
+  .screen-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  /* HEADER */
+  .site-header {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+  .site-header::before, .site-header::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--gold);
+  }
+  .site-header::before { top: 8px; }
+  .site-header::after { bottom: -5px; }
+
+  .brand-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .site-header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .site-header p {
+    font-size: 13px;
+    color: var(--ink3);
+    letter-spacing: 0.02em;
+  }
+
+  /* PROGRESS */
+  .progress-area {
+    margin-bottom: 2rem;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink3);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+  .progress-track {
+    height: 3px;
+    background: var(--paper3);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 3px;
+    background: var(--gold);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  /* SECTION BADGE */
+  .section-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 1.25rem;
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 2px;
+    margin-bottom: 1.5rem;
+  }
+  .section-badge .s-num {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 32px;
+  }
+  .section-badge .s-info h2 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .section-badge .s-info span {
+    font-size: 12px;
+    color: var(--ink3);
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: #fff;
+    border: 1px solid var(--paper3);
+    border-top: 3px solid var(--ink);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 4px 4px 0 var(--paper3);
+  }
+  .q-num-label {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  /* 3-POINT LIKERT */
+  .likert3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .lk3-label {
+    cursor: pointer;
+    display: block;
+  }
+  .lk3-label input { display: none; }
+  .lk3-box {
+    border: 1px solid var(--paper3);
+    padding: 14px 8px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink3);
+    transition: all 0.15s;
+    background: var(--paper);
+    border-radius: 2px;
+    line-height: 1.4;
+  }
+  .lk3-box .lk-icon {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .lk3-label input:checked + .lk3-box {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .lk3-label:hover .lk3-box {
+    border-color: var(--gold);
+    background: var(--gold-light);
+    color: var(--ink);
+  }
+
+  /* MULTI CHOICE */
+  .multi-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .mc-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--paper3);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--paper);
+    border-radius: 2px;
+  }
+  .mc-item:hover { border-color: var(--gold); background: var(--gold-light); }
+  .mc-item.sel { background: var(--ink); border-color: var(--ink); }
+  .mc-item.sel .mc-cb { background: var(--gold); border-color: var(--gold); }
+  .mc-item.sel .mc-txt { color: var(--paper); }
+  .mc-cb {
+    width: 18px; height: 18px; min-width: 18px;
+    border: 1px solid var(--ink3);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: #fff;
+  }
+  .mc-txt { font-size: 14px; color: var(--ink); line-height: 1.5; }
+
+  /* NAV */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+  .btn {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    padding: 12px 28px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+    border-radius: 2px;
+  }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: var(--gold); border-color: var(--gold); }
+
+  /* ───── RESULT ───── */
+  .result-wrap { display: none; }
+  .result-wrap.show { display: block; }
+
+  .verdict-banner {
+    text-align: center;
+    padding: 2.5rem 2rem;
+    border: 2px solid var(--ink);
+    margin-bottom: 2rem;
+    position: relative;
+  }
+  .verdict-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 4px 16px;
+    border: 1px solid currentColor;
+    margin-bottom: 12px;
+    border-radius: 1px;
+  }
+  .verdict-score {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .verdict-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .verdict-desc {
+    font-size: 14px;
+    color: var(--ink3);
+    line-height: 1.8;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 12px;
+    margin-bottom: 2rem;
+  }
+  .sc-box {
+    border: 1px solid var(--paper3);
+    padding: 1rem 1.25rem;
+    background: #fff;
+  }
+  .sc-box .sc-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .sc-box .sc-name {
+    font-size: 13px;
+    color: var(--ink3);
+  }
+  .sc-box .sc-val {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .sc-track {
+    height: 3px;
+    background: var(--paper3);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .sc-bar {
+    height: 3px;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+
+  .feedback-block {
+    border: 1px solid var(--paper3);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    background: #fff;
+  }
+  .feedback-block h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ink);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--paper3);
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+  .fb-item {
+    font-size: 13px;
+    color: var(--ink3);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--paper2);
+    line-height: 1.6;
+  }
+  .fb-item:last-child { border: none; }
+
+  /* PRINT BUTTON */
+  .action-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+  }
+  .action-row .btn {
+    min-width: 160px;
+    text-align: center;
+  }
+
+  /* ───── PRINT STYLES ───── */
+  @media print {
+    body { background: #fff; font-size: 13px; }
+    .screen-only { display: none !important; }
+    .quiz-area { display: block !important; }
+    .result-wrap { display: none !important; }
+    .site-header { padding: 1.5rem 1rem 1rem; margin-bottom: 1.5rem; }
+    .site-header h1 { font-size: 22px; }
+    .q-card {
+      break-inside: avoid;
+      box-shadow: none;
+      border: 1px solid #ccc;
+      border-top: 2px solid #000;
+      margin-bottom: 1rem;
+      padding: 1rem;
+    }
+    .q-text { font-size: 14px; }
+    .lk3-box { padding: 10px 6px; font-size: 12px; }
+    .section-badge { break-before: auto; }
+    .progress-area, .nav-row { display: none !important; }
+    .print-header-info {
+      display: flex !important;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 8px;
+    }
+    .all-sections { display: block !important; }
+    .section-block { break-inside: avoid-page; margin-bottom: 2rem; }
+  }
+
+  @media screen {
+    .print-header-info { display: none; }
+    .all-sections { display: none; }
+  }
+
+  /* COPY LINK TOAST */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 10px 24px;
+    font-size: 13px;
+    border-radius: 2px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 500px) {
+    .site-header h1 { font-size: 22px; }
+    .lk3-box { padding: 10px 4px; font-size: 12px; }
+    .score-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="screen-wrap">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="brand-label">선비칼국수 프랜차이즈 본사</div>
+    <h1>예비점주 적성 · 인성 검사</h1>
+    <p>총 20문항 · 4개 영역 종합 평가</p>
+  </header>
+
+  <!-- PRINT-ONLY FULL PAPER VERSION -->
+  <div class="print-header-info">
+    <span>응시자 성명: ___________________</span>
+    <span>응시 일자: ___________________</span>
+    <span>담당자 확인: ___________________</span>
+  </div>
+
+  <!-- INTERACTIVE QUIZ (screen only) -->
+  <div class="quiz-area screen-only" id="quizArea">
+    <div class="progress-area">
+      <div class="progress-meta">
+        <span id="secLabel">섹션 1 / 4</span>
+        <span>문항 <span id="qIdx">1</span> / 20</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
+    </div>
+    <div id="secBadge"></div>
+    <div id="qContainer"></div>
+    <div class="nav-row">
+      <button class="btn" id="btnPrev" onclick="nav(-1)" disabled>← 이전</button>
+      <button class="btn btn-primary" id="btnNext" onclick="nav(1)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- RESULT (screen only) -->
+  <div class="result-wrap screen-only" id="resultWrap">
+    <div class="verdict-banner" id="verdictBanner">
+      <div class="verdict-badge" id="vBadge"></div>
+      <div class="verdict-score" id="vScore"></div>
+      <div class="verdict-title" id="vTitle"></div>
+      <p class="verdict-desc" id="vDesc"></p>
+    </div>
+    <div class="score-grid" id="scoreGrid"></div>
+    <div id="fbArea"></div>
+    <div class="action-row">
+      <button class="btn" onclick="printResult()">인쇄 / PDF 저장</button>
+      <button class="btn" onclick="copyLink()">링크 복사</button>
+      <button class="btn btn-primary" onclick="restart()">다시 검사하기</button>
+    </div>
+  </div>
+
+  <!-- PRINT-ONLY ALL SECTIONS -->
+  <div class="all-sections" id="printAll"></div>
+
+</div>
+
+<div class="toast" id="toast">링크가 복사되었습니다</div>
+
+<script>
+const sections = [
+  {
+    title: "인성 · 태도", sub: "성실성, 책임감, 대인관계",
+    questions: [
+      { type: "likert", text: "나는 정해진 규칙이나 절차가 불편하더라도 반드시 준수하는 편이다." },
+      { type: "likert", text: "실수가 발생했을 때 변명보다 즉각적인 사과와 해결책을 먼저 생각한다." },
+      { type: "likert", text: "힘든 상황에서도 직원들에게 긍정적인 모습을 보여줄 수 있다." },
+      { type: "likert", text: "주변 사람들로부터 '약속을 잘 지킨다'는 말을 자주 듣는다." },
+      { type: "multi", text: "나의 강점을 가장 잘 나타내는 항목을 모두 선택하세요.",
+        options: ["꼼꼼하고 반복 업무에 강하다", "사람들과 쉽게 친해진다", "위기 상황에서 침착하게 행동한다", "스스로 동기부여를 잘 한다"] }
+    ]
+  },
+  {
+    title: "운영 적성", sub: "위생관리, 재고, 고객응대",
+    questions: [
+      { type: "likert", text: "매장 위생 점검표를 매일 빠짐없이 작성하는 것은 당연한 일이라고 생각한다." },
+      { type: "likert", text: "재고 파악과 발주 관리를 체계적으로 할 자신이 있다." },
+      { type: "likert", text: "불만 고객을 응대할 때 감정보다 해결 방법을 먼저 생각한다." },
+      { type: "likert", text: "파트타임 직원에게도 명확한 업무 지침을 제공하고 교육할 수 있다." },
+      { type: "multi", text: "매장 운영 시 가장 중요하다고 생각하는 것을 모두 선택하세요.",
+        options: ["일관된 맛과 레시피 준수", "직원 친절 교육", "청결한 매장 환경", "고객 대기 시간 최소화"] }
+    ]
+  },
+  {
+    title: "브랜드 이해 · 충성도", sub: "본사 협력, 브랜드 가치 수호",
+    questions: [
+      { type: "likert", text: "본사의 레시피와 조리법을 임의로 변경하지 않겠다고 확신할 수 있다." },
+      { type: "likert", text: "선비칼국수의 브랜드 스토리와 가치관에 진심으로 공감한다." },
+      { type: "likert", text: "본사 캠페인이나 프로모션에 적극적으로 동참할 의사가 있다." },
+      { type: "likert", text: "가맹점 협의회 또는 정기 교육에 빠짐없이 참여할 자신이 있다." },
+      { type: "multi", text: "프랜차이즈 가맹에서 가장 중요하게 생각하는 것을 모두 선택하세요.",
+        options: ["본사와의 신뢰 관계", "브랜드 지명도 활용", "검증된 운영 시스템", "지속적인 교육 지원"] }
+    ]
+  },
+  {
+    title: "재무 · 경영 마인드", sub: "자금 계획, 리스크 인식",
+    questions: [
+      { type: "likert", text: "창업 전 손익분기점과 예상 수익을 꼼꼼히 계산해보았다." },
+      { type: "likert", text: "초기 3~6개월은 적자가 날 수 있다는 현실을 이해하고 준비되어 있다." },
+      { type: "likert", text: "인건비·임대료·원가를 기준으로 월 목표 매출액을 설정할 수 있다." },
+      { type: "likert", text: "자금이 부족하더라도 품질을 낮추는 원가 절감은 하지 않겠다." },
+      { type: "multi", text: "창업 준비 시 가장 먼저 확인한(할) 것을 모두 선택하세요.",
+        options: ["상권 분석 및 유동인구 조사", "예상 초기 투자비용 계산", "동종 업종 경쟁 매장 조사", "본사 지원 조건 및 계약 조항"] }
+    ]
+  }
+];
+
+const lk3 = [
+  { label: "그렇지 않다", icon: "✕", val: 1 },
+  { label: "보통이다", icon: "–", val: 2 },
+  { label: "그렇다", icon: "○", val: 3 }
+];
+
+const allQ = [];
+sections.forEach((sec, si) => sec.questions.forEach((q, qi) => allQ.push({ ...q, si, qi, gi: allQ.length })));
+
+let answers = {};
+let curQ = 0;
+
+function render() {
+  const q = allQ[curQ];
+  const sec = sections[q.si];
+  const total = allQ.length;
+
+  document.getElementById("pFill").style.width = (curQ / total * 100) + "%";
+  document.getElementById("qIdx").textContent = curQ + 1;
+  document.getElementById("secLabel").textContent = "섹션 " + (q.si + 1) + " / 4";
+  document.getElementById("btnPrev").disabled = curQ === 0;
+  document.getElementById("btnNext").textContent = curQ === total - 1 ? "결과 보기 →" : "다음 →";
+
+  const prevSi = curQ > 0 ? allQ[curQ - 1].si : -1;
+  const sb = document.getElementById("secBadge");
+  if (prevSi !== q.si) {
+    sb.innerHTML = `<div class="section-badge"><div class="s-num">0${q.si + 1}</div><div class="s-info"><h2>${sec.title}</h2><span>${sec.sub}</span></div></div>`;
+  } else sb.innerHTML = "";
+
+  const ex = answers[curQ];
+  const qc = document.getElementById("qContainer");
+
+  if (q.type === "likert") {
+    qc.innerHTML = `<div class="q-card">
+      <div class="q-num-label">Q ${String(curQ + 1).padStart(2, "0")}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="likert3">
+        ${lk3.map(l => `<label class="lk3-label">
+          <input type="radio" name="lkq" value="${l.val}" ${ex === l.val ? "checked" : ""}>
+          <div class="lk3-box"><span class="lk-icon">${l.icon}</span>${l.label}</div>
+        </label>`).join("")}
+      </div>
+    </div>`;
+    document.querySelectorAll('input[name=lkq]').forEach(r => r.addEventListener('change', e => { answers[curQ] = parseInt(e.target.value); }));
+  } else {
+    const saved = ex || [];
+    qc.innerHTML = `<div class="q-card">
+      <div class="q-num-label">Q ${String(curQ + 1).padStart(2, "0")}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="multi-grid">
+        ${q.options.map((o, i) => `<div class="mc-item${saved.includes(i) ? " sel" : ""}" data-i="${i}">
+          <div class="mc-cb">${saved.includes(i) ? "✓" : ""}</div>
+          <span class="mc-txt">${o}</span>
+        </div>`).join("")}
+      </div>
+    </div>`;
+    document.querySelectorAll('.mc-item').forEach(el => el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.i);
+      const cur = answers[curQ] || [];
+      if (cur.includes(idx)) { answers[curQ] = cur.filter(x => x !== idx); }
+      else { answers[curQ] = [...cur, idx]; }
+      render();
+    }));
+  }
+}
+
+function nav(dir) {
+  if (dir === 1) {
+    const q = allQ[curQ];
+    const ans = answers[curQ];
+    if (ans === undefined || (Array.isArray(ans) && ans.length === 0)) {
+      alert("응답을 선택해 주세요.");
+      return;
+    }
+    if (curQ === allQ.length - 1) { showResult(); return; }
+    curQ++;
+  } else { if (curQ > 0) curQ--; }
+  render();
+}
+
+function calcScores() {
+  return sections.map((sec, si) => {
+    const qs = allQ.filter(q => q.si === si);
+    let raw = 0, max = 0;
+    qs.forEach(q => {
+      const a = answers[q.gi];
+      if (q.type === "likert") { raw += (a || 2); max += 3; }
+      else { const s = a || []; raw += Math.min(s.length, 4); max += 4; }
+    });
+    return Math.round(raw / max * 100);
+  });
+}
+
+function showResult() {
+  document.getElementById("quizArea").style.display = "none";
+  const rw = document.getElementById("resultWrap");
+  rw.classList.add("show");
+
+  const scores = calcScores();
+  const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+
+  const vb = document.getElementById("vBadge");
+  const vs = document.getElementById("vScore");
+  const vt = document.getElementById("vTitle");
+  const vd = document.getElementById("vDesc");
+  const banner = document.getElementById("verdictBanner");
+
+  if (avg >= 80) {
+    vb.textContent = "우수 예비점주";
+    vb.style.color = "#1a5c3a"; vb.style.borderColor = "#1a5c3a";
+    vs.textContent = avg + "점";
+    vt.textContent = "개설 적극 권장";
+    vd.textContent = "선비칼국수의 가치관과 운영 철학에 높은 적합성을 보입니다. 교육 과정 이수 후 정식 개설을 권장드립니다.";
+    banner.style.borderColor = "#1a5c3a";
+  } else if (avg >= 60) {
+    vb.textContent = "조건부 추천";
+    vb.style.color = "#8b6914"; vb.style.borderColor = "#8b6914";
+    vs.textContent = avg + "점";
+    vt.textContent = "보완 후 재검토";
+    vd.textContent = "전반적으로 양호하나 일부 영역에서 추가 교육이 필요합니다. 집중 보완 후 재검토를 권장드립니다.";
+    banner.style.borderColor = "#8b6914";
+  } else {
+    vb.textContent = "추가 검토 필요";
+    vb.style.color = "#8b2020"; vb.style.borderColor = "#8b2020";
+    vs.textContent = avg + "점";
+    vt.textContent = "준비 기간 필요";
+    vd.textContent = "핵심 역량에 대한 준비가 더 필요합니다. 본사 교육 프로그램 이수 후 재평가를 권장드립니다.";
+    banner.style.borderColor = "#8b2020";
+  }
+
+  const sg = document.getElementById("scoreGrid");
+  const barColors = [["#1a5c3a","#3d9e6b"],["#8b6914","#c9a030"],["#8b2020","#c94040"]];
+  sg.innerHTML = sections.map((sec, i) => {
+    const sc = scores[i];
+    const bc = sc >= 80 ? barColors[0][0] : sc >= 60 ? barColors[1][0] : barColors[2][0];
+    return `<div class="sc-box">
+      <div class="sc-top"><span class="sc-name">${sec.title}</span><span class="sc-val">${sc}</span></div>
+      <div class="sc-track"><div class="sc-bar" style="width:${sc}%;background:${bc};"></div></div>
+    </div>`;
+  }).join("");
+
+  const fa = document.getElementById("fbArea");
+  const strong = sections.map((s, i) => ({ ...s, sc: scores[i] })).filter(s => s.sc >= 80);
+  const weak = sections.map((s, i) => ({ ...s, sc: scores[i] })).filter(s => s.sc < 65);
+  let html = "";
+  if (strong.length) html += `<div class="feedback-block"><h3>강점 영역</h3>${strong.map(s => `<div class="fb-item">◆ ${s.title} (${s.sc}점) — ${s.sub} 역량이 우수합니다.</div>`).join("")}</div>`;
+  if (weak.length) html += `<div class="feedback-block"><h3>보완 권장 영역</h3>${weak.map(s => `<div class="fb-item">△ ${s.title} (${s.sc}점) — 개설 전 집중 교육을 권장드립니다.</div>`).join("")}</div>`;
+  fa.innerHTML = html;
+}
+
+function buildPrintAll() {
+  const el = document.getElementById("printAll");
+  let html = "";
+  sections.forEach((sec, si) => {
+    html += `<div class="section-block"><div class="section-badge"><div class="s-num">0${si+1}</div><div class="s-info"><h2>${sec.title}</h2><span>${sec.sub}</span></div></div>`;
+    sec.questions.forEach((q, qi) => {
+      const gIdx = si * 5 + qi;
+      if (q.type === "likert") {
+        html += `<div class="q-card"><div class="q-num-label">Q ${String(gIdx+1).padStart(2,"0")}</div><div class="q-text">${q.text}</div><div class="likert3">${lk3.map(l=>`<div class="lk3-box"><span class="lk-icon">${l.icon}</span>${l.label}</div>`).join("")}</div></div>`;
+      } else {
+        html += `<div class="q-card"><div class="q-num-label">Q ${String(gIdx+1).padStart(2,"0")}</div><div class="q-text">${q.text}</div><div class="multi-grid">${q.options.map(o=>`<div class="mc-item"><div class="mc-cb"></div><span class="mc-txt">${o}</span></div>`).join("")}</div></div>`;
+      }
+    });
+    html += `</div>`;
+  });
+  el.innerHTML = html;
+}
+
+function printResult() {
+  buildPrintAll();
+  window.print();
+}
+
+function copyLink() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    const t = document.getElementById("toast");
+    t.classList.add("show");
+    setTimeout(() => t.classList.remove("show"), 2500);
+  }).catch(() => {
+    prompt("아래 링크를 복사하세요:", url);
+  });
+}
+
+function restart() {
+  answers = {};
+  curQ = 0;
+  document.getElementById("resultWrap").classList.remove("show");
+  document.getElementById("quizArea").style.display = "block";
+  render();
+}
+
+render();
+buildPrintAll();
+</script>
+</body>
+</html>
