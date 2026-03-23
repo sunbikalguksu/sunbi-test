@@ -143,14 +143,21 @@
   .db-table td{padding:8px 10px;border-bottom:1px solid var(--paper2);color:var(--ink2);vertical-align:top;}
   .db-table tr:last-child td{border:none;}
   .db-table tr:hover td{background:var(--gold-light);}
-  .expand-btn{font-size:11px;padding:3px 8px;border:1px solid var(--paper3);background:transparent;cursor:pointer;border-radius:2px;color:var(--ink3);}
+  .expand-btn{font-size:11px;padding:3px 10px;border:1px solid var(--paper3);background:transparent;cursor:pointer;border-radius:2px;color:var(--ink3);}
   .expand-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .delete-btn{font-size:11px;padding:3px 10px;border:1px solid #e0b0b0;background:transparent;cursor:pointer;border-radius:2px;color:#c05050;}
+  .delete-btn:hover{background:#fff0f0;border-color:#c05050;}
   .detail-row{display:none;}
   .detail-row.open{display:table-row;}
-  .detail-cell{background:var(--paper2)!important;padding:12px 14px!important;}
-  .detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;}
-  .detail-item{font-size:11px;color:var(--ink3);line-height:1.5;}
-  .detail-item strong{color:var(--ink2);font-weight:500;}
+  .detail-cell{background:var(--paper2)!important;padding:16px 18px!important;}
+  .detail-scores{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .detail-score-badge{display:flex;flex-direction:column;align-items:center;background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:6px 12px;min-width:80px;}
+  .detail-score-badge .ds-name{font-size:10px;color:var(--ink3);margin-bottom:3px;}
+  .detail-score-badge .ds-val{font-size:16px;font-weight:700;}
+  .detail-qa{display:flex;flex-direction:column;gap:8px;}
+  .detail-qa-item{background:#fff;border:1px solid var(--paper3);border-radius:4px;padding:10px 12px;}
+  .detail-qa-item .dq-q{font-size:12px;color:var(--ink2);font-weight:600;margin-bottom:4px;line-height:1.5;}
+  .detail-qa-item .dq-a{font-size:12px;color:var(--ink3);line-height:1.5;}
   .db-empty{padding:2rem;text-align:center;color:var(--ink3);font-size:13px;}
   .badge-verdict{display:inline-block;font-size:10px;padding:2px 8px;border-radius:1px;}
 
@@ -664,13 +671,13 @@ function renderAdminDB(){
     html+=`<div class="db-section">
       <div class="db-branch-title">📍 ${branch} (${list.length}명)</div>
       <table class="db-table">
-        <thead><tr><th>응시일</th><th>성명</th><th>연락처</th><th>종합</th><th>판정</th><th>상세</th></tr></thead>
+        <thead><tr><th>응시일</th><th>성명</th><th>연락처</th><th>종합</th><th>판정</th><th>상세</th><th>삭제</th></tr></thead>
         <tbody>`;
     list.forEach((r,ri)=>{
       const vc=r.verdict==="우수 예비점주"?"#1a5c3a":r.verdict==="조건부 추천"?"#8b6914":"#8b2020";
-      const secScores=r.scores?SECTIONS.map((s,i)=>`${s.title}: ${r.scores[i]}점`).join(" · "):"";
       const detailId=`det_${branch.replace(/\s/g,"_")}_${ri}`;
-      const ansHtml=r.answers?`<div class="detail-grid">${r.answers.map(a=>`<div class="detail-item"><strong>${a.q.slice(0,18)}…</strong><br>${a.a}</div>`).join("")}</div>`:"상세 데이터 없음";
+      const scoresHtml=r.scores?`<div class="detail-scores">${SECTIONS.map((s,i)=>{const sc=r.scores[i];const c=sc>=80?"#1a5c3a":sc>=60?"#8b6914":"#8b2020";return`<div class="detail-score-badge"><span class="ds-name">${s.title}</span><span class="ds-val" style="color:${c};">${sc}점</span></div>`;}).join("")}</div>`:"";
+      const ansHtml=r.answers?`<div class="detail-qa">${r.answers.map(a=>`<div class="detail-qa-item"><div class="dq-q">Q. ${a.q}</div><div class="dq-a">▶ ${a.a}</div></div>`).join("")}</div>`:"상세 데이터 없음";
       html+=`<tr>
         <td>${r.date}</td>
         <td>${r.name}</td>
@@ -678,10 +685,11 @@ function renderAdminDB(){
         <td style="text-align:center;font-weight:600;">${r.avg}점</td>
         <td><span class="badge-verdict" style="color:${vc};border:1px solid ${vc};padding:2px 6px;">${r.verdict}</span></td>
         <td><button class="expand-btn" onclick="toggleDetail('${detailId}')">펼치기</button></td>
+        <td><button class="delete-btn" onclick="deleteRecord(${r._idx})">삭제</button></td>
       </tr>
       <tr class="detail-row" id="${detailId}">
-        <td class="detail-cell" colspan="6">
-          <div style="font-size:12px;color:var(--ink3);margin-bottom:8px;">${secScores}</div>
+        <td class="detail-cell" colspan="7">
+          ${scoresHtml}
           ${ansHtml}
         </td>
       </tr>`;
@@ -700,6 +708,14 @@ function toggleDetail(id){
   const btn=el.previousElementSibling.querySelector('.expand-btn');
   el.classList.toggle("open");
   btn.textContent=el.classList.contains("open")?"접기":"펼치기";
+}
+
+function deleteRecord(idx){
+  if(!confirm("이 응시자 데이터를 삭제하시겠습니까?"))return;
+  const records=loadDB();
+  records.splice(idx,1);
+  saveDB(records);
+  renderAdminDB();
 }
 
 function clearDB(){
