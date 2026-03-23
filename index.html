@@ -546,15 +546,17 @@ async function runAI(scores,avg,verdict){
     const resp=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{thinkingConfig:{thinkingBudget:0}}})
     });
     const data=await resp.json();
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"분석 결과를 불러오지 못했습니다.";
+    if(!resp.ok){throw new Error(data.error?.message||resp.status);}
+    const parts=data.candidates?.[0]?.content?.parts||[];
+    const text=parts.find(p=>!p.thought&&p.text)?.text||parts[0]?.text||"분석 결과를 불러오지 못했습니다.";
     document.getElementById("aiContent").innerHTML=`<div class="ai-text">${text}</div>`;
     const p=document.getElementById("printAIText");
     if(p)p.textContent=text;
   } catch(e){
-    document.getElementById("aiContent").innerHTML=`<div class="ai-text">AI 분석을 불러오지 못했습니다.</div>`;
+    document.getElementById("aiContent").innerHTML=`<div class="ai-text">AI 분석 오류: ${e.message}</div>`;
   }
 }
 
