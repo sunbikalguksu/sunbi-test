@@ -371,8 +371,8 @@ SECTIONS.forEach((s,si)=>s.questions.forEach((q,qi)=>allQ.push({...q,si,qi,gi:al
 let answers={}, curQ=0, applicant={name:"",phone:"",branch:""};
 
 // ── STORAGE ──
-async function loadDB(){try{const r=await window.storage.get(STORAGE_KEY,true);return r?JSON.parse(r.value):[];}catch(e){return[];}}
-async function saveDB(d){try{await window.storage.set(STORAGE_KEY,JSON.stringify(d),true);}catch(e){}}
+function loadDB(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r):[];}catch(e){return[];}}
+function saveDB(d){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(d));}catch(e){}}
 
 // ── INTRO ──
 function startQuiz(){
@@ -522,9 +522,9 @@ async function showResult(){
     if(q.type==="likert"){return{q:q.text,a:LK3.find(l=>l.val===a)?.label||"미응답"};}
     else{return{q:q.text,a:(a||[]).map(idx=>q.options[idx]).join(", ")||"미선택"};}
   });
-  const records=await loadDB();
+  const records=loadDB();
   records.push({name:applicant.name,phone:applicant.phone,branch:applicant.branch,date:dateStr,avg,scores,verdict:verdictLabel,answers:answerData});
-  await saveDB(records);
+  saveDB(records);
 
   // AI
   await runAI(scores,avg,verdictLabel);
@@ -637,7 +637,7 @@ async function checkPw(){
     document.getElementById("dbArea").classList.remove("hidden");
     const storedKey=localStorage.getItem("ai_api_key")||"";
     document.getElementById("apiKeyStatus").textContent=storedKey?"✓ API 키가 등록되어 있습니다.":"API 키가 등록되지 않았습니다.";
-    await renderAdminDB();
+    renderAdminDB();
   } else {
     document.getElementById("pwError").textContent="비밀번호가 올바르지 않습니다.";
     document.getElementById("pwInput").value="";
@@ -645,8 +645,8 @@ async function checkPw(){
   }
 }
 
-async function renderAdminDB(){
-  const records=await loadDB();
+function renderAdminDB(){
+  const records=loadDB();
   const el=document.getElementById("dbArea");
   if(!records.length){el.innerHTML='<div class="db-empty">아직 응시 데이터가 없습니다.</div>';return;}
 
@@ -702,10 +702,10 @@ function toggleDetail(id){
   btn.textContent=el.classList.contains("open")?"접기":"펼치기";
 }
 
-async function clearDB(){
+function clearDB(){
   if(!confirm("정말 모든 응시 데이터를 삭제하시겠습니까?"))return;
-  await saveDB([]);
-  await renderAdminDB();
+  saveDB([]);
+  renderAdminDB();
 }
 
 function restart(){
